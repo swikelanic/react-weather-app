@@ -1,16 +1,17 @@
-import "./styles.css";
+import "./styles.css"; 
+import { useState } from "react";
+
 import SearchBar from "./components/SearchBar";
-import ThemeToggle from "./components/ThemeToggle";
+import ThemeToggle from "./components/ThemeToggle";  
 import UnitsToggle from "./components/UnitsToggle";
-import WeatherCard from "./components/WeatherCard";
+import WeatherCard, { WeatherData } from "./components/WeatherCard";
 import HourlyForecast from "./components/HourlyForecast";
 import DailyForecast from "./components/DailyForecast";
 import Loader from "./components/Loader";
 import ErrorToast from "./components/ErrorToast";
 import { useWeather } from "./hooks/useWeather";
-import { useState } from "react";
 
-// ✅ Import types from card components
+// Import types
 import { HourlyData } from "./components/HourlyForecastCard";
 import { DailyData } from "./components/DailyForecastCard";
 
@@ -20,11 +21,10 @@ export default function App() {
     actions: { setUnits, setTheme, loadByCity, locateMe },
   } = useWeather();
 
-  const [savedLocations, setSavedLocations] = useState<string[]>(
-    () => JSON.parse(localStorage.getItem("savedLocations") || "[]")
+  const [savedLocations, setSavedLocations] = useState<string[]>(() =>
+    JSON.parse(localStorage.getItem("savedLocations") || "[]")
   );
 
-  // Toggle between Hourly and Daily
   const [showHourly, setShowHourly] = useState(true);
 
   const saveLocation = (location: string) => {
@@ -46,6 +46,16 @@ export default function App() {
     localStorage.removeItem("savedLocations");
   };
 
+// Ensure current matches WeatherData interface
+const currentWeather: WeatherData | null = current
+  ? {
+      name: current.name,
+      temp: current.main?.temp ?? 0,           // <-- adapt from your API
+      weatherMain: current.weather[0]?.main ?? "clear",  // <-- adapt from your API
+    }
+  : null;
+
+
   return (
     <div className={`app ${theme}`}>
       <header className="header">
@@ -55,18 +65,11 @@ export default function App() {
         </div>
 
         <div className="actions">
-          <button
-            className="btn ghost"
-            onClick={locateMe}
-            title="Use my current location"
-          >
+          <button className="btn ghost" onClick={locateMe} title="Use my current location">
             📍 Locate me
           </button>
 
-          <ThemeToggle
-            theme={theme}
-            onToggle={() => setTheme(theme === "light" ? "dark" : "light")}
-          />
+          <ThemeToggle theme={theme} onToggle={() => setTheme(theme === "light" ? "dark" : "light")} />
 
           <UnitsToggle units={units} onChange={setUnits} />
         </div>
@@ -78,10 +81,16 @@ export default function App() {
         {loading && <Loader />}
         {error && <ErrorToast message={error} />}
 
-        {current && <WeatherCard data={current} unit={units} theme={theme} />}
+        {currentWeather && (
+          <WeatherCard
+            data={currentWeather}
+            unit={units}
+            theme={theme}
+          />
+        )}
 
-        {current && (
-          <button className="btn" onClick={() => saveLocation(current.name)}>
+        {currentWeather && (
+          <button className="btn" onClick={() => saveLocation(currentWeather.name)}>
             💾 Save Location
           </button>
         )}
@@ -91,41 +100,27 @@ export default function App() {
             {savedLocations.map((loc) => (
               <div className="chip" key={loc}>
                 {loc}
-                <span className="remove" onClick={() => removeLocation(loc)}>
-                  ×
-                </span>
+                <span className="remove" onClick={() => removeLocation(loc)}>×</span>
               </div>
             ))}
-            <button className="btn red" onClick={clearLocations}>
-              Clear All
-            </button>
+            <button className="btn red" onClick={clearLocations}>Clear All</button>
           </div>
         )}
 
-        {/* Toggle Button */}
         {forecast && (
-          <div style={{ margin: "1rem 0", textAlign: "center" }}>
+          <div style={{ margin: "1rem 0", textAlign: "center" } as React.CSSProperties}>
             <button className="btn" onClick={() => setShowHourly(!showHourly)}>
               {showHourly ? "Show Daily Forecast" : "Show Hourly Forecast"}
             </button>
           </div>
         )}
 
-        {/* Forecast display */}
         {forecast && (
           <div className="grid two">
             {showHourly ? (
-              <HourlyForecast
-                items={forecast.hourly as HourlyData[]}
-                unit={units}
-                theme={theme} // pass theme prop
-              />
+              <HourlyForecast items={forecast.hourly as HourlyData[]} unit={units} theme={theme} />
             ) : (
-              <DailyForecast
-                items={forecast.daily as DailyData[]}
-                unit={units}
-                theme={theme} // pass theme prop
-              />
+              <DailyForecast items={forecast.daily as DailyData[]} unit={units} theme={theme} />
             )}
           </div>
         )}

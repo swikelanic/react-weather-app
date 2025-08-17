@@ -1,70 +1,66 @@
-import { WeatherData } from "../services/weatherApi";
-import {
-  WiDaySunny,
-  WiCloud,
-  WiRain,
-  WiSnow,
-  WiThunderstorm,
-} from "react-icons/wi";
+import React from "react";
+import { WiDaySunny, WiCloud, WiRain, WiSnow, WiThunderstorm } from "react-icons/wi";
+import type { IconType } from "react-icons";
+
+export interface WeatherData {
+  name: string;
+  temp: number;
+  weatherMain: string;
+}
 
 interface Props {
   data: WeatherData;
   unit: "metric" | "imperial";
-  theme?: "light" | "dark"; 
+  theme: "light" | "dark";
 }
 
-export default function WeatherCard({ data, unit, theme = "light" }: Props) {
-  const weatherMain = data.weather[0].main.toLowerCase();
-
-  const getWeatherIcon = () => {
-    switch (weatherMain) {
+export default function WeatherCard({ data, unit, theme }: Props) {
+  const getWeatherIcon = (): IconType | null => {
+    switch (data.weatherMain.toLowerCase()) {
       case "clear":
-        return <WiDaySunny color="#FFD700" size={48} />;
+        return WiDaySunny;
       case "clouds":
-        return <WiCloud color="#B0C4DE" size={48} />;
+        return WiCloud;
       case "rain":
-      case "drizzle":
-        return <WiRain color="#00BFFF" size={48} />;
+        return WiRain;
       case "snow":
-        return <WiSnow color="#ADD8E6" size={48} />;
+        return WiSnow;
       case "thunderstorm":
-        return <WiThunderstorm color="#FFA500" size={48} />;
+        return WiThunderstorm;
       default:
-        return <WiDaySunny color="#FFD700" size={48} />;
+        return null;
     }
   };
 
-  const cardBg = theme === "dark" ? "#333" : "#f0f0f0";
-  const textColor = theme === "dark" ? "#fff" : "#000";
+  const Icon = getWeatherIcon();
 
   return (
-    <div
-      className="card weather"
-      style={{
-        backgroundColor: cardBg,
-        color: textColor,
-        padding: "1rem",
-        borderRadius: "8px",
-        margin: "0.5rem 0",
-      }}
-    >
-      <h2>{data.name}</h2>
-      <div
-        className="row"
-        style={{ display: "flex", alignItems: "center", gap: "1rem" }}
-      >
-        <div className="icon">{getWeatherIcon()}</div>
-        <div>
-          <p>
-            {Math.round(data.main.temp)}°{unit === "metric" ? "C" : "F"}
-          </p>
-          <p>{data.weather[0].description}</p>
-          <p>
-            💧 {data.main.humidity}% | 💨 {data.wind.speed}{" "}
-            {unit === "metric" ? "m/s" : "mph"}
-          </p>
-        </div>
+    <div className={`weather-card ${theme}`}>
+      <div className="weather-header">
+        <h2>{data.name}</h2>
+        {/* ✅ Cast Icon to any to satisfy TypeScript */}
+        {Icon ? React.createElement(Icon as any, { color: getIconColor(data.weatherMain), size: 48 }) : null}
       </div>
+      <p>
+        {data.temp}° {unit === "metric" ? "C" : "F"}
+      </p>
     </div>
   );
+}
+
+function getIconColor(weatherMain: string) {
+  switch (weatherMain.toLowerCase()) {
+    case "clear":
+      return "#FFD700";
+    case "clouds":
+      return "#B0C4DE";
+    case "rain":
+      return "#1E90FF";
+    case "snow":
+      return "#ADD8E6";
+    case "thunderstorm":
+      return "#FFA500";
+    default:
+      return "#000";
+  }
 }

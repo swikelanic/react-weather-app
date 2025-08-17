@@ -8,7 +8,8 @@ interface Props {
 export default function SearchBar({ onSearch, defaultValue = "" }: Props) {
   const [query, setQuery] = useState(defaultValue);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Explicitly type the event
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (query.trim()) onSearch(query.trim());
   };
