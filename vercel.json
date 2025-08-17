@@ -1,10 +1,12 @@
 {
-  "build": {
-    "env": {
-      "REACT_APP_WEATHER_API_KEY": "7e9eefb429e12f49b33efe8719752080"
-    },
-    "installCommand": "npm install --legacy-peer-deps",
-    "buildCommand": "npm run build",
-    "outputDirectory": "build"
-  }
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "installCommand": "npm install --legacy-peer-deps",
+        "buildCommand": "npm run build"
+      }
+    }
+  ]
 }
