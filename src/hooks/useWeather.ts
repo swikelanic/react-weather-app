@@ -129,7 +129,7 @@ export function useWeather() {
     localStorage.removeItem("savedLocations");
   }, []);
 
-  useEffect(() => {
+    useEffect(() => {
     const initDone = localStorage.getItem("initDone") === "1";
 
     if (!initDone) {
@@ -138,7 +138,8 @@ export function useWeather() {
     } else {
       loadByCity(city);
     }
-  }, []); 
+  }, [city, locateMe, loadByCity]); 
+
 
   return {
     state: { units, theme, city, current, forecast, loading, error, savedLocations },
