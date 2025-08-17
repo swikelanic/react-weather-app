@@ -1,0 +1,12 @@
+.theme-toggle {
+  margin-bottom: 16px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  background-color: #3b82f6;
+  color: white;
+  cursor: pointer;
+}
+.theme-toggle:hover {
+  background-color: #2563eb;
+}

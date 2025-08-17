@@ -1,0 +1,19 @@
+.weather-card {
+  background-color: #ffffff;
+  color: #111827;
+  padding: 1rem;
+  border-radius: 5px;
+  text-align: center;
+  margin: 1rem 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.weather-card img.weather-icon {
+  width: 60px;
+  height: 60px;
+}
+
+.weather-temp {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
